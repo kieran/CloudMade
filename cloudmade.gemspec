@@ -12,7 +12,7 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
   ## package information
-  s.name        = 'CloudMade'
+  s.name        = 'cloudmade'
   s.author      = 'Kieran Huggins'
   s.version     = ("$Release: 0.0.1 $" =~ /[\.\d]+/) && $&
   s.platform    = Gem::Platform::RUBY

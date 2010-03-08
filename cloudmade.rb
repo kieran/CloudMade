@@ -320,7 +320,11 @@ class CloudMade
 
       # output
       uri = "&marker=opacity:#{@opacity}"
-      uri << @url ? "|url:#{@url}" : "|size:#{@size}|label:#{@label}"
+      if @url
+        uri << "|url:#{@url}" 
+      else
+        uri << "|size:#{@size}|label:#{@label}"
+      end
       uri << "|#{@lat+@lat_offset},#{@lng+@lng_offset}"
     end
 

@@ -96,6 +96,14 @@ As with markers, you can adjust the opacity of your path with :opacity. Other op
     CloudMade.path :color=>0x0088ff, :weight=>5 :points=>[ [43.6459,-79.4994], [43.6797,-79.3860], ... ]
 
 
+Putting it all together
+-----------------------
+
+Here's a quick example of a map with paths and markers:
+
+http://gist.github.com/325525
+
+
 Caching for the future
 ----------------------
 
