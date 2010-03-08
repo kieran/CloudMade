@@ -8,19 +8,20 @@
 ### Kieran Huggins kieran-at-refactory-dot-ca.
 ###
 
-#require 'rubygems'
+require 'rubygems'
 
 spec = Gem::Specification.new do |s|
   ## package information
   s.name        = 'cloudmade'
   s.author      = 'Kieran Huggins'
-  s.version     = ("$Release: 0.0.1 $" =~ /[\.\d]+/) && $&
+  s.version     = '0.0.1'
   s.platform    = Gem::Platform::RUBY
   s.homepage    = 'http://github.com/kieran/cloudmade'
   s.summary = s.description = "'CloudMade' is a library that generates & optionally caches CloudMade static maps with polylines & markers."
 
   ## files
-  files = %w[README.markdown lib/cloudmade.rb cloudmade.gemspec]
+  s.files = ['README.markdown', 'lib/cloudmade.rb', 'cloudmade.gemspec']
+  s.require_paths = ["lib"]
 end
 
 if $0 == __FILE__
