@@ -8,7 +8,7 @@
 ### Kieran Huggins kieran-at-refactory-dot-ca.
 ###
 
-require 'rubygems'
+#require 'rubygems'
 
 spec = Gem::Specification.new do |s|
   ## package information
@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
   s.summary = s.description = "'CloudMade' is a library that generates & optionally caches CloudMade static maps with polylines & markers."
 
   ## files
-  files = %w[README.markdown cloudmade.rb cloudmade.gemspec]
+  files = %w[README.markdown lib/cloudmade.rb cloudmade.gemspec]
 end
 
 if $0 == __FILE__
