@@ -213,7 +213,7 @@ class CloudMade
 
       #TODO: if no bbox or lat/lng given, generate bbox to include all paths & markers
 
-      uri = "http://#{@domain}/#{@api_key}/map?format=#{@format}&size=#{@width}x#{@height}&styleid=#{@style_id}"
+      uri = "/#{@api_key}/map?format=#{@format}&size=#{@width}x#{@height}&styleid=#{@style_id}"
 
       if @lat && @lng
         uri << "&center=#{@lat},#{@lng}"
@@ -240,29 +240,28 @@ class CloudMade
 
     def cache(uri,format)
       # determine the local filename
-      @cached_map = Pathname(CloudMade.cache_dir + "/#{Zlib.crc32(uri).to_i.to_s(16)}.#{format}")
+      @cached_map = Pathname(CloudMade.cache_dir + "/#{Zlib.crc32(uri).to_i.to_s(16)}.#{format}").to_s
       
       # send cached map URI, if it exists
-      return Pathname(CloudMade.cache_path + "/#{Zlib.crc32(uri).to_i.to_s(16)}.#{format}") if @cached_map.file?
+      return Pathname(CloudMade.cache_path + "/#{Zlib.crc32(uri).to_i.to_s(16)}.#{format}").to_s if @cached_map.file?
         
       # cache the map after the url is sent
       pid = fork do
         require 'net/http'
-        require 'uri'
         require 'zlib'
 
-        url = URI.parse(uri)
-        Net::HTTP.start(url.host,url.port) { |http|
-          res = http.get("#{url.path}?#{url.query}")
+        Net::HTTP.start(@domain, 80) { |http| 
+          res = http.get(uri)
           raise 'Error fetching CloudMade map for cache' unless res.code == '200'
           open(@cached_map, "wb") { |file|
             file.write(res.body)
-           }
+          }
         }
+
       end
       Process.detach(pid)
       
-      return uri
+      return "http://#{@domain}"+uri
     end
 
   end
@@ -304,7 +303,7 @@ class CloudMade
       @lng_offset = params.fetch :lng_offset, 0.0
       @url = params.fetch :url, nil
       @id = params.fetch :id, nil
-      @label = params.fetch(:label,'A').trim[0] # first character only :-(
+      @label = params.fetch(:label,'A').strip[0] # first character only :-(
     end
 
     def to_s
