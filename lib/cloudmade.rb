@@ -28,7 +28,6 @@ class CloudMade
   #
   def initialize(key=nil)
     CloudMade.api_key = key if key
-    FileUtils.mkdir_p CloudMade.cache_dir if CloudMade.cache_dir
     raise "\n\nYou must provide your API key to use the CloudMade service.\n\nIn init.rb (or whatever):\nCloudMade.api_key = 'YOUR_API_KEY_HERE'\n - or - \nCloudMade.new('YOUR_API_KEY_HERE')\n\n" unless CloudMade.api_key
   end
 
@@ -240,12 +239,13 @@ class CloudMade
 
     def cache(uri,format)
       # determine the local filename
-      @cached_map = Pathname(CloudMade.cache_dir + "/#{Zlib.crc32(uri).to_i.to_s(16)}.#{format}").to_s
+      @cached_map = Pathname(CloudMade.cache_dir.to_s + Pathname("/#{Zlib.crc32(uri).to_i.to_s(16)}.#{format}"))
       
       # send cached map URI, if it exists
-      return Pathname(CloudMade.cache_path + "/#{Zlib.crc32(uri).to_i.to_s(16)}.#{format}").to_s if @cached_map.file?
-        
-      # cache the map after the url is sent
+      return "#{CloudMade.cache_path}/#{Zlib.crc32(uri).to_i.to_s(16)}.#{format}" if @cached_map.file?
+
+
+      # cache the map after the url is sent      
       pid = fork do
         require 'net/http'
         require 'zlib'
@@ -253,14 +253,17 @@ class CloudMade
         Net::HTTP.start(@domain, 80) { |http| 
           res = http.get(uri)
           raise 'Error fetching CloudMade map for cache' unless res.code == '200'
-          open(@cached_map, "wb") { |file|
+          FileUtils.mkdir_p File.dirname(@cached_map.to_s)
+          open(@cached_map.to_s, "wb") { |file|
             file.write(res.body)
           }
         }
 
       end
       Process.detach(pid)
-      
+
+
+      puts "SENDING TO CLOUDMADE: http://#{@domain}"+uri
       return "http://#{@domain}"+uri
     end
 
@@ -299,8 +302,6 @@ class CloudMade
       @opacity = params.fetch :opacity, 1
       @lat = params.fetch :lat, nil
       @lng = params.fetch :lng, nil
-      @lat_offset = params.fetch :lat_offset, -0.002
-      @lng_offset = params.fetch :lng_offset, 0.0
       @url = params.fetch :url, nil
       @id = params.fetch :id, nil
       @label = params.fetch(:label,'A').strip[0] # first character only :-(
@@ -324,7 +325,7 @@ class CloudMade
       else
         uri << "|size:#{@size}|label:#{@label}"
       end
-      uri << "|#{@lat+@lat_offset},#{@lng+@lng_offset}"
+      uri << "|#{@lat},#{@lng}"
     end
 
   end # Marker
